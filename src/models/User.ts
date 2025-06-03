@@ -5,13 +5,10 @@ export interface IUser extends Document {
   email: string;
   password: string;
   name: string;
+  phone: string;
   role: "user" | "admin";
-  subscription: {
-    status: "free" | "premium";
-    startDate: Date;
-    endDate: Date;
-    plan: string;
-  };
+  isPremium: boolean;
+  premiumExpiresAt?: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -34,28 +31,22 @@ const userSchema = new Schema<IUser>(
       required: true,
       trim: true,
     },
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
     },
-    subscription: {
-      status: {
-        type: String,
-        enum: ["free", "premium"],
-        default: "free",
-      },
-      startDate: {
-        type: Date,
-        default: Date.now,
-      },
-      endDate: {
-        type: Date,
-      },
-      plan: {
-        type: String,
-        default: "free",
-      },
+    isPremium: {
+      type: Boolean,
+      default: false,
+    },
+    premiumExpiresAt: {
+      type: Date,
     },
   },
   {

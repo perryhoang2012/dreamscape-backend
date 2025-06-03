@@ -33,15 +33,6 @@ cd dreamscape-backend
 npm install
 ```
 
-3. Create a `.env` file in the root directory with the following variables:
-
-```
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/dreamscape
-JWT_SECRET=your_jwt_secret_key_here
-NODE_ENV=development
-```
-
 ## Development
 
 To run the development server with hot reload:
