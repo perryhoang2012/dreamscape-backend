@@ -17,14 +17,11 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
-app.use(express.json());
+// Basic middleware
 app.use(cors());
-app.use(
-  helmet({
-    crossOriginResourcePolicy: { policy: "cross-origin" },
-  })
-);
+app.use(helmet());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -33,8 +30,11 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Connect to database
-connectDB();
+// Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/music", musicRoutes);
 
 // Serve static files from uploads directory
 app.use(
@@ -46,17 +46,6 @@ app.use(
     },
   })
 );
-
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/categories", categoryRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/music", musicRoutes);
-
-// Base route
-app.get("/", (req, res) => {
-  res.json({ message: "Welcome to Dreamscape API" });
-});
 
 // Error handling middleware
 app.use(
@@ -71,20 +60,8 @@ app.use(
   }
 );
 
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/dreamscape")
-  .then(() => {
-    console.log("Connected to MongoDB");
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(__dirname, "../uploads/music");
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
-  })
-  .catch((error) => {
-    console.error("MongoDB connection error:", error);
-  });
+// Connect to database
+connectDB();
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

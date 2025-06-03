@@ -4,20 +4,16 @@ import {
   getAllMusic,
   deleteMusic,
 } from "../controllers/musicController";
-import { uploadAudio, uploadImage } from "../config/cloudinary";
+import multer from "multer";
 
 const router = express.Router();
+const upload = multer(); // memory storage, không lưu file
 
 // Get all music
 router.get("/", getAllMusic);
 
 // Create new music
-router.post(
-  "/",
-  uploadAudio.single("audio"),
-  uploadImage.single("image"),
-  createMusic
-);
+router.post("/", upload.none(), createMusic);
 
 // Delete music
 router.delete("/:id", deleteMusic);
